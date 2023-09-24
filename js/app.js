@@ -10,6 +10,13 @@ cargarEventListeners();
 function cargarEventListeners() {
     //Cuando agregar un curso presionando "agregar al carrito"
     listaCursos.addEventListener("click", agregarCurso); 
+    //Elimina cursos del carrito
+    carrito.addEventListener("click", eliminarCurso);
+    //Vaciar el carrito
+    vaciarCarritoBtn.addEventListener("click", ()=>{
+        articulosCarrito = [];
+        limpiarHTML();
+    });
 }
 
 //Funciones
@@ -24,6 +31,19 @@ function agregarCurso(e) {
     
 }
 
+//Elimina un curso de un carrito
+function eliminarCurso(e) {
+    e.preventDefault();
+    if(e.target.classList.contains("borrar-curso")){
+        const cursoId = e.target.getAttribute("data-id");
+
+        //Elimina del arreglo
+        articulosCarrito.filter(curso => curso.id !== cursoId);
+        limpiarHTML();
+    } 
+}
+
+
 //Lee el contenido del HTML al que le dimos click y extrae la información del curso
 function leerDatosCurso(curso) {
 
@@ -35,12 +55,24 @@ function leerDatosCurso(curso) {
         id: curso.querySelector("a").getAttribute("data-id"),
         cantidad: 1
     }
-    console.log(infoCurso);
-
+    
+    //Revisa si un elemento ya existe en el carrito
+    const existe = articulosCarrito.some(curso => curso.id === infoCurso.id);
+    if(existe){
+        const cursos = articulosCarrito.map(curso =>{
+            if(curso.id === infoCurso.id){
+                curso.cantidad++;
+                return curso; //Retorna el objeto actualizado
+            } else {
+                return curso; //Retorna los objetos que no son duplicados
+            }
+        })
+        articulosCarrito = [...cursos];
+    } else {
+        articulosCarrito = [...articulosCarrito, infoCurso];
+    }
     //Agrega elementos al arreglo de carritos
-    articulosCarrito = [...articulosCarrito, infoCurso];
     carritoHTML(infoCurso);
-    console.log(articulosCarrito);
 }
 
 
